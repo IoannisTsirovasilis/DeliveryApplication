@@ -4,7 +4,7 @@ const context = require('./../models/context');
 const categoryModel = require('./../models/category');
 const currencyConverter = require('./../utils/currencyConverter');
 
-// get categories with items for the 'Menu'
+// GET categories with items for the 'Menu'
 router.get('/', async function(req, res) {
     try {
         let db = await context.get();
@@ -16,7 +16,7 @@ router.get('/', async function(req, res) {
     }
 });
 
-// get categories with items for the 'Menu'
+// GET categories with items for the 'Menu' with specific currency
 router.get('/currency/:currency', async function(req, res) {
     try {
         let currency = req.params.currency;

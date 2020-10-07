@@ -36,6 +36,7 @@ router.get('/user/:userId', async function(req, res) {
 router.get('/user/:userId/currency/:currency', async function(req, res) {
   try {
     let userId = req.params.userId;
+    let currency = req.params.currency;
     let db = await context.get();
 
     let user = await userModel.findOne(db, { _id : new ObjectId(userId) });
@@ -47,13 +48,11 @@ router.get('/user/:userId/currency/:currency', async function(req, res) {
 
     let query = { userId : user._id, status : config.get('schema.carts.active') };
     let cart = await cartModel.findOne(db, query);
-    for (let c in cart) {
-      for (let i in cart[c].items) {
-        cart[c].items[i].price = await currencyConverter.convert(cart[c].items[i].price, currency);
-      }
+    for (let i in cart.items) {
+      cart.items[i].price = await currencyConverter.convert(cart.items[i].price, currency);
     }
 
-    cart.totalPrice = await currencyConverter.convert(cart.totalPrice);
+    cart.totalPrice = await currencyConverter.convert(cart.totalPrice, currency);
 
     res.send(cart);
 

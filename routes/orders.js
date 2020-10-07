@@ -34,11 +34,6 @@ router.post('/cart/:cartId/', async function(req, res) {
 
         let user = await userModel.findOne(db, { _id : new ObjectId(cart.userId) });
 
-        if (user === null) {
-            res.sendStatus(400);
-            return;
-        }
-
         // insert order in orders collection
         cart.status = config.get('schema.carts.completed');
         let document = { user : user, cart : cart, totalPrice : cart.totalPrice, createdOn : new Date() };
