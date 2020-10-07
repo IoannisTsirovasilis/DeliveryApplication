@@ -2,7 +2,7 @@ const collection = 'orders';
 
 const order = function() {
     async function find(db, query) {
-        await db.collection(collection).find(query, update);
+        return await db.collection(collection).find(query).toArray();
     }
 
     async function insertOne(db, document) { 

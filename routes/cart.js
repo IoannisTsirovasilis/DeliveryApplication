@@ -82,7 +82,7 @@ router.put('/addItem/:itemId/user/:userId', async function(req, res) {
               totalPrice : Decimal128.fromString(item.price.toString())
             }
           };
-          cartModel.findOneAndUpdate(db, query, update);
+          cartModel.updateOne(db, query, update);
           res.sendStatus(200);
           return;
         }
@@ -99,7 +99,7 @@ router.put('/addItem/:itemId/user/:userId', async function(req, res) {
         },
         $push: { items: item  }
       };
-      cartModel.findOneAndUpdate(db, query, update);
+      cartModel.updateOne(db, query, update);
     }
     
     res.sendStatus(200);
@@ -154,7 +154,7 @@ router.put('/removeItem/:itemId/user/:userId', async function(req, res) {
             }
           };
 
-          cartModel.findOneAndUpdate(db, query, update);
+          cartModel.updateOne(db, query, update);
 
         } else {
           // else reduce the price and the quantity by one
@@ -168,7 +168,7 @@ router.put('/removeItem/:itemId/user/:userId', async function(req, res) {
               totalPrice : Decimal128.fromString((-item.price).toString())
             }
           };
-          cartModel.findOneAndUpdate(db, query, update);
+          cartModel.updateOne(db, query, update);
         }
         break;        
       }

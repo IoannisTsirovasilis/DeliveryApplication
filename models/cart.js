@@ -1,9 +1,9 @@
 const collection = 'carts';
 
 const cart = function() {
-    async function findOneAndUpdate(db, query, update) {
+    async function updateOne(db, query, update) {
         await db.collection(collection)
-        .findOneAndUpdate(query, update);
+        .updateOne(query, update);
     }
 
     async function insertOne(db, document) { 
@@ -15,7 +15,7 @@ const cart = function() {
     }
 
     return {
-        findOneAndUpdate: findOneAndUpdate,
+        updateOne: updateOne,
         insertOne: insertOne,
         findOne: findOne
     }
