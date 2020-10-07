@@ -8,5 +8,8 @@
             "active" : "active",
             "completed" : "completed"
         }
+    },
+    "app" : {
+        "currencyConversionURL" : "https://api.exchangerate.host/convert"
     }
 }

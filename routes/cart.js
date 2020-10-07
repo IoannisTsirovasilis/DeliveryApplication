@@ -6,8 +6,9 @@ const { ObjectId, Decimal128 } = require('mongodb');
 const cartModel = require('./../models/cart');
 const itemModel = require('./../models/item');
 const userModel = require('./../models/user');
+const currencyConverter = require('./../utils/currencyConverter');
 
-// get current cart
+// GET current cart
 router.get('/user/:userId', async function(req, res) {
   try {
     let userId = req.params.userId;
@@ -22,6 +23,37 @@ router.get('/user/:userId', async function(req, res) {
 
     let query = { userId : user._id, status : config.get('schema.carts.active') };
     let cart = await cartModel.findOne(db, query);
+
+    res.send(cart);
+
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+});
+
+// GET current cart with different currency
+router.get('/user/:userId/currency/:currency', async function(req, res) {
+  try {
+    let userId = req.params.userId;
+    let db = await context.get();
+
+    let user = await userModel.findOne(db, { _id : new ObjectId(userId) });
+
+    if (user === null) {
+      res.sendStatus(400);
+      return;
+    };
+
+    let query = { userId : user._id, status : config.get('schema.carts.active') };
+    let cart = await cartModel.findOne(db, query);
+    for (let c in cart) {
+      for (let i in cart[c].items) {
+        cart[c].items[i].price = await currencyConverter.convert(cart[c].items[i].price, currency);
+      }
+    }
+
+    cart.totalPrice = await currencyConverter.convert(cart.totalPrice);
 
     res.send(cart);
 

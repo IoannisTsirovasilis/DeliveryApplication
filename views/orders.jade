@@ -2,4 +2,22 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
+  hr
+  each o in orders   
+    p 
+      |<b>Order:</b> !{o._id} <br />
+      |<b>Customer Info:</b>
+      ul
+        li Full Name: !{o.user.firstName + ' ' + o.user.lastName}
+        li Address: !{o.user.address + ', ' + o.user.postalCode}
+        li Phone: !{o.user.phone}
+      |<b>Cart:</b> <br/>
+      ul
+        each i in o.cart.items
+          li
+            <b>!{i.name}</b> <br />
+            |Quantity: !{i.quantity} <br />
+            |Price per unit: !{i.price}&euro;<br />
+      |<b>Total Price</b>: !{o.totalPrice}&euro;
+      hr
+      hr

@@ -7,13 +7,12 @@ const cartModel = require('./../models/cart');
 const orderModel = require('./../models/order');
 const userModel = require('./../models/user');
 
-
 // GET orders
 router.get('/', async function(req, res) {
   try {
     let db = await context.get();
     let orders = await orderModel.find(db, {});
-    res.send(orders);
+    res.render('orders', { title: 'Orders Summary', orders });
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
@@ -41,6 +40,7 @@ router.post('/cart/:cartId/', async function(req, res) {
         }
 
         // insert order in orders collection
+        cart.status = config.get('schema.carts.completed');
         let document = { user : user, cart : cart, totalPrice : cart.totalPrice, createdOn : new Date() };
         await orderModel.insertOne(db, document);
 
