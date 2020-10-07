@@ -2,5 +2,11 @@
     "db": {
         "connectionString" : "mongodb://localhost:27017/",
         "database" : "deliveryApplication"
+    },
+    "schema" : {
+        "carts" : {
+            "active" : "active",
+            "completed" : "completed"
+        }
     }
 }
