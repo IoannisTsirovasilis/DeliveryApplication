@@ -9,14 +9,9 @@ const order = function() {
         await db.collection(collection).insertOne(document);
     }
 
-    async function findOne(db, query) { 
-        return await db.collection(collection).findOne(query);
-    }
-
     return {
         find: find,
-        insertOne: insertOne,
-        findOne: findOne
+        insertOne: insertOne
     }
 }
 
