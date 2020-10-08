@@ -6,24 +6,6 @@ An Express API for ordering food online. An online cart is implemented for a del
 - Express v4.16.1
 - MongoDB v4.4.1
 
-# How to run
-Clone repository
-```
-git clone https://github.com/IoannisTsirovasilis/DeliveryApplication.git
-```
-Install Dependencies
-```
-npm install
-```
-Run the API
-```
-npm start
-```
-Example calls for the proper use can be found in the following link.
-
-# API Documentation
-https://documenter.getpostman.com/view/7405866/TVRj4T31
-
 # Database Architecture
 The database contains 5 collections:
 - users
@@ -82,3 +64,28 @@ The API consists of the following:
 - 'utils' folder containing an utility file for currency conversion.
 - 'views' folder containing .jade files for the orders and error page.
 - 'public' folder containing a stylesheet file for styling the views.
+
+# How to run
+Clone repository
+```
+git clone https://github.com/IoannisTsirovasilis/DeliveryApplication.git
+```
+Install Dependencies
+```
+npm install
+```
+Navigate to config/default.json and fill the fields "connectionString" and "database" according to your configuration.
+![alt text](https://github.com/IoannisTsirovasilis/DeliveryApplication/blob/main/dbConfig.png "Db Config")
+
+Seed the database
+```
+./node_modules/.bin/seed-setup
+```
+Run the API
+```
+npm start
+```
+Example calls for the proper use can be found in the following link.
+
+# API Documentation
+<a href="https://documenter.getpostman.com/view/7405866/TVRj4T31" target="_blank">https://documenter.getpostman.com/view/7405866/TVRj4T31</a>
