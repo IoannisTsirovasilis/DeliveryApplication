@@ -79,7 +79,7 @@ Navigate to config/default.json and fill the fields "connectionString" and "data
 
 Seed the database
 ```
-./node_modules/.bin/seed-setup
+./node_modules/.bin/seed
 ```
 Run the API
 ```
