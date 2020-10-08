@@ -1,5 +1,6 @@
 # DeliveryApplication
 An Express API for ordering food online. An online cart is implemented for a delivery shop. The merchant can watch the orders on a single page. MongoDB is used as the data storage.
+Each user has a unique active cart where he/she can fill with items (or remove) and submit an order. After the submission the cart's status changes to 'completed' and for the next order a new cart will be created for the user.
 
 # Tools
 - Node.js v12.18.4
@@ -77,7 +78,7 @@ npm install
 Navigate to config/default.json and fill the fields "connectionString" and "database" according to your configuration.
 ![alt text](https://github.com/IoannisTsirovasilis/DeliveryApplication/blob/main/dbConfig.png "Db Config")
 
-Seed the database
+Seed the database with users, categories and items
 ```
 ./node_modules/.bin/seed
 ```
@@ -88,4 +89,7 @@ npm start
 Example calls for the proper use can be found in the following link.
 
 # API Documentation
-<a href="https://documenter.getpostman.com/view/7405866/TVRj4T31" target="_blank">https://documenter.getpostman.com/view/7405866/TVRj4T31</a>
+https://documenter.getpostman.com/view/7405866/TVRj4T31
+
+# Currency Conversion API
+https://exchangerate.host/
