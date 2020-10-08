@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const config = require('config');
 const context = require('./../models/context');
 const { ObjectId, Decimal128 } = require('mongodb');
@@ -11,18 +11,18 @@ const currencyConverter = require('./../utils/currencyConverter');
 // GET current cart
 router.get('/user/:userId', async function(req, res) {
   try {
-    let userId = req.params.userId;
-    let db = await context.get();
+    const userId = req.params.userId;
+    const db = await context.get();
 
-    let user = await userModel.findOne(db, { _id : new ObjectId(userId) });
+    const user = await userModel.findOne(db, { _id : new ObjectId(userId) });
 
     if (user === null) {
       res.sendStatus(400);
       return;
     };
 
-    let query = { userId : user._id, status : config.get('schema.carts.active') };
-    let cart = await cartModel.findOne(db, query);
+    const query = { userId : user._id, status : config.get('schema.carts.active') };
+    const cart = await cartModel.findOne(db, query);
 
     res.send(cart);
 
@@ -35,24 +35,36 @@ router.get('/user/:userId', async function(req, res) {
 // GET current cart with different currency
 router.get('/user/:userId/currency/:currency', async function(req, res) {
   try {
-    let userId = req.params.userId;
-    let currency = req.params.currency;
-    let db = await context.get();
+    const userId = req.params.userId;
+    const currency = req.params.currency;
+    const db = await context.get();
 
-    let user = await userModel.findOne(db, { _id : new ObjectId(userId) });
+    const user = await userModel.findOne(db, { _id : new ObjectId(userId) });
 
     if (user === null) {
       res.sendStatus(400);
       return;
     };
 
-    let query = { userId : user._id, status : config.get('schema.carts.active') };
-    let cart = await cartModel.findOne(db, query);
+    const query = { userId : user._id, status : config.get('schema.carts.active') };
+    const cart = await cartModel.findOne(db, query);
+    const prices = [];
     for (let i in cart.items) {
-      cart.items[i].price = await currencyConverter.convert(cart.items[i].price, currency);
+      // Prepare calls to the currency conversion API
+      prices.push(currencyConverter.convert(cart.items[i].price, currency));
     }
 
-    cart.totalPrice = await currencyConverter.convert(cart.totalPrice, currency);
+    prices.push(currencyConverter.convert(cart.totalPrice, currency));
+
+    // await all the calls to finish
+    const results = await Promise.all(prices);
+
+    // replace EUR prices with converted prices
+    let r = 0;
+    for (let i in cart.items) {
+      cart.items[i].price = results[r++];
+    }
+    cart.totalPrice = results[r];
 
     res.send(cart);
 
@@ -65,33 +77,35 @@ router.get('/user/:userId/currency/:currency', async function(req, res) {
 // PUT function for adding an item to the user's cart
 router.put('/addItem/:itemId/user/:userId', async function(req, res) {
   try {
-    let itemId = req.params.itemId;
-    let userId = req.params.userId;
-    let db = await context.get();
+    const itemId = req.params.itemId;
+    const userId = req.params.userId;
+
+    const db = await context.get();
     
-    let item = await itemModel.findOne(db, { _id : new ObjectId(itemId) });
+    const item = await itemModel.findOne(db, { _id : new ObjectId(itemId) });
 
     if (item === null) {
       res.sendStatus(400);
       return;
     };
 
-    let user = await userModel.findOne(db, { _id : new ObjectId(userId) });
+    const user = await userModel.findOne(db, { _id : new ObjectId(userId) });
 
     if (user === null) {
       res.sendStatus(400);
       return;
     };
 
-    let query = { userId : user._id, status : config.get('schema.carts.active') };
-    let cart = await cartModel.findOne(db, query);
+    // query to find the active cart of the user
+    const query = { userId : user._id, status : config.get('schema.carts.active') };
+    const cart = await cartModel.findOne(db, query);
 
     // Add quantity field to the item so that the cart knows how many times a user has requested the same item.
     item.quantity = 1;
 
     // if the cart has not yet been created, create it with the selected item
     if (cart === null) {      
-      let document = { 
+      const document = { 
         userId : user._id, 
         status : config.get('schema.carts.active'),
         modifiedOn : new Date(),
@@ -103,8 +117,8 @@ router.put('/addItem/:itemId/user/:userId', async function(req, res) {
       // else, first check if the item already exists in the cart and increase the quantity and the price
       for (let i in cart.items) {
         if (cart.items[i]._id.equals(item._id)) {
-          let query = { userId : user._id, status : config.get('schema.carts.active'), "items._id" : item._id };
-          let update = {
+          const query = { userId : user._id, status : config.get('schema.carts.active'), "items._id" : item._id };
+          const update = {
             $set: { 
               modifiedOn : new Date()
             },
@@ -120,8 +134,8 @@ router.put('/addItem/:itemId/user/:userId', async function(req, res) {
       }
       
       // if this part is reached then the item is not in the cart. Add it to the cart and increase the price
-      let query = { userId : user._id, status : config.get('schema.carts.active')};
-      let update = {
+      const query = { userId : user._id, status : config.get('schema.carts.active')};
+      const update = {
         $set: { 
           modifiedOn : new Date()
         },
@@ -143,18 +157,19 @@ router.put('/addItem/:itemId/user/:userId', async function(req, res) {
 // PUT function for removing an item from the cart
 router.put('/removeItem/:itemId/user/:userId', async function(req, res) {
   try {
-    let itemId = req.params.itemId;
-    let userId = req.params.userId;
-    let db = await context.get();
+    const itemId = req.params.itemId;
+    const userId = req.params.userId;
+    
+    const db = await context.get();
 
-    let item = await itemModel.findOne(db, { _id : new ObjectId(itemId) });
+    const item = await itemModel.findOne(db, { _id : new ObjectId(itemId) });
 
     if (item === null) {
       res.sendStatus(400);
       return;
     };
 
-    let user = await userModel.findOne(db, { _id : new ObjectId(userId) });
+    const user = await userModel.findOne(db, { _id : new ObjectId(userId) });
 
     if (user === null) {
       res.sendStatus(400);
@@ -162,16 +177,16 @@ router.put('/removeItem/:itemId/user/:userId', async function(req, res) {
     };
 
     // we assume that the cart is already present in the database
-    let query = { userId : user._id, status : config.get('schema.carts.active') };
-    let cart = await cartModel.findOne(db, query);
+    const query = { userId : user._id, status : config.get('schema.carts.active') };
+    const cart = await cartModel.findOne(db, query);
 
     // Iterate through items to find the one that we want to get it removed
     for (let i in cart.items) {
       if (cart.items[i]._id.equals(item._id)) {
         // if the quantity is 1, reduce price and remove the item complete from the 'items' array
         if (cart.items[i].quantity === 1) {
-          let query = { userId : user._id, status : config.get('schema.carts.active'), "items._id" : item._id };
-          let update = {
+          const query = { userId : user._id, status : config.get('schema.carts.active'), "items._id" : item._id };
+          const update = {
             $set: { 
               modifiedOn : new Date()
             },
@@ -189,8 +204,8 @@ router.put('/removeItem/:itemId/user/:userId', async function(req, res) {
 
         } else {
           // else reduce the price and the quantity by one
-          let query = { userId : user._id, status : config.get('schema.carts.active'), "items._id" : item._id };
-          let update = {
+          const query = { userId : user._id, status : config.get('schema.carts.active'), "items._id" : item._id };
+          const update = {
             $set: { 
               modifiedOn : new Date()
             },

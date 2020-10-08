@@ -15,15 +15,6 @@ const currencyConverter = function() {
             });
         });
     }
-
-    // this is the exported function that gets the connection
-    async function get() {
-        try {
-            return await connect();
-        } catch (error) {
-            return error;
-        }  
-    }
     
     return {
         convert: convert

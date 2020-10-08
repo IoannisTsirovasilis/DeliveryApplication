@@ -2,8 +2,8 @@ const collection = 'items';
 
 const item = function() {
 
-    async function findOne(db, query) { 
-        return await db.collection(collection).findOne(query);
+    function findOne(db, query) { 
+        return db.collection(collection).findOne(query);
     }
 
     return {

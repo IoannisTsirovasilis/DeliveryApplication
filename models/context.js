@@ -7,7 +7,7 @@ const context = function() {
     // connect to the database and return connection
     async function connect() {
         try {
-            let con = await mongodb.MongoClient.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true });
+            const con = await mongodb.MongoClient.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true });
             return con.db(dbName);            
         } catch (error) {
             return error;

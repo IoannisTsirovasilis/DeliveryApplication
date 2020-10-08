@@ -1,12 +1,12 @@
 const collection = 'orders';
 
 const order = function() {
-    async function find(db, query) {
-        return await db.collection(collection).find(query).toArray();
+    function find(db, query) {
+        return db.collection(collection).find(query).toArray();
     }
 
-    async function insertOne(db, document) { 
-        await db.collection(collection).insertOne(document);
+    function insertOne(db, document) { 
+        db.collection(collection).insertOne(document);
     }
 
     return {
