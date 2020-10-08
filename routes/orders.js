@@ -12,7 +12,7 @@ router.get('/', async function(req, res) {
   try {
     const db = await context.get();
     const orders = await orderModel.find(db, {});
-    res.render('orders', { title: 'Orders Summary', orders });
+    res.render('orders', { title: config.get('views.orders.title'), orders });
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
@@ -27,30 +27,35 @@ router.post('/cart/:cartId/', async function(req, res) {
     try {
       const cart = await cartModel.findOne(db, { _id : new ObjectId(cartId), status : config.get('schema.carts.active') });
 
-        if (cart === null) {
-            res.sendStatus(400);
-            return;
-        }
+      if (cart === null) {
+        res.status(400).send(config.get('errors.cart.invalidId'));
+        return;
+      }
 
-        const user = await userModel.findOne(db, { _id : new ObjectId(cart.userId) });
+      if (cart.items.length == 0) {
+        res.status(400).send(config.get('errors.cart.empty'));
+        return;
+      }
 
-        // insert order in orders collection
-        cart.status = config.get('schema.carts.completed');
-        const document = { user : user, cart : cart, totalPrice : cart.totalPrice, createdOn : new Date() };
-        await orderModel.insertOne(db, document);
+      const user = await userModel.findOne(db, { _id : new ObjectId(cart.userId) });
 
-        // update cart with 'completed' status
-        const query = { _id : new ObjectId(cart._id), status : config.get('schema.carts.active') };
-        const update = {
-            $set: { 
-                modifiedOn : new Date(),
-                status : config.get('schema.carts.completed')
-            }
-        };
+      // insert order in orders collection
+      cart.status = config.get('schema.carts.completed');
+      const document = { user : user, cart : cart, totalPrice : cart.totalPrice, createdOn : new Date() };
+      await orderModel.insertOne(db, document);
 
-        await cartModel.updateOne(db, query, update);
+      // update cart with 'completed' status
+      const query = { _id : new ObjectId(cart._id), status : config.get('schema.carts.active') };
+      const update = {
+          $set: { 
+              modifiedOn : new Date(),
+              status : config.get('schema.carts.completed')
+          }
+      };
 
-        res.sendStatus(200);
+      await cartModel.updateOne(db, query, update);
+
+      res.sendStatus(200);
     } catch (error) {
         console.log(error);
         res.sendStatus(500);

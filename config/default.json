@@ -11,5 +11,22 @@
     },
     "app" : {
         "currencyConversionURL" : "https://api.exchangerate.host/convert"
+    },
+    "errors" : {
+        "cart" : {
+            "invalidId" : "Invalid cartId",
+            "empty" : "The cart is empty"
+        },
+        "user" : {
+            "invalidId" : "Invalid userId"
+        },
+        "item" : {
+            "invalidId" : "Invalid itemId"
+        }
+    },
+    "views" : {
+        "orders" : {
+            "title" :"Orders Summary"
+        }
     }
 }

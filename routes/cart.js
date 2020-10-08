@@ -17,7 +17,7 @@ router.get('/user/:userId', async function(req, res) {
     const user = await userModel.findOne(db, { _id : new ObjectId(userId) });
 
     if (user === null) {
-      res.sendStatus(400);
+      res.status(400).send(config.get('errors.user.invalidId'));
       return;
     };
 
@@ -42,7 +42,7 @@ router.get('/user/:userId/currency/:currency', async function(req, res) {
     const user = await userModel.findOne(db, { _id : new ObjectId(userId) });
 
     if (user === null) {
-      res.sendStatus(400);
+      res.status(400).send(config.get('errors.user.invalidId'));
       return;
     };
 
@@ -85,14 +85,14 @@ router.put('/addItem/:itemId/user/:userId', async function(req, res) {
     const item = await itemModel.findOne(db, { _id : new ObjectId(itemId) });
 
     if (item === null) {
-      res.sendStatus(400);
+      res.status(400).send(config.get('errors.item.invalidId'));
       return;
     };
 
     const user = await userModel.findOne(db, { _id : new ObjectId(userId) });
 
     if (user === null) {
-      res.sendStatus(400);
+      res.status(400).send(config.get('errors.user.invalidId'));
       return;
     };
 
@@ -165,14 +165,14 @@ router.put('/removeItem/:itemId/user/:userId', async function(req, res) {
     const item = await itemModel.findOne(db, { _id : new ObjectId(itemId) });
 
     if (item === null) {
-      res.sendStatus(400);
+      res.status(400).send(config.get('errors.item.invalidId'));
       return;
     };
 
     const user = await userModel.findOne(db, { _id : new ObjectId(userId) });
 
     if (user === null) {
-      res.sendStatus(400);
+      res.status(400).send(config.get('errors.user.invalidId'));
       return;
     };
 
